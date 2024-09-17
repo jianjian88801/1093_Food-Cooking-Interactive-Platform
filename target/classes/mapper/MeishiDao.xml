@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.MeishiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yonghu_id as yonghuId
+        ,a.meishi_uuid_number as meishiUuidNumber
+        ,a.meishi_name as meishiName
+        ,a.meishi_photo as meishiPhoto
+        ,a.meishi_video as meishiVideo
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.meishi_types as meishiTypes
+        ,a.meishi_clicknum as meishiClicknum
+        ,a.meishi_shicai_text as meishiShicaiText
+        ,a.meishi_content as meishiContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.meishi_delete as meishiDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.MeishiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+
+        FROM meishi  a
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.meishiUuidNumber != '' and params.meishiUuidNumber != null and params.meishiUuidNumber != 'null' ">
+                and a.meishi_uuid_number like CONCAT('%',#{params.meishiUuidNumber},'%')
+            </if>
+            <if test=" params.meishiName != '' and params.meishiName != null and params.meishiName != 'null' ">
+                and a.meishi_name like CONCAT('%',#{params.meishiName},'%')
+            </if>
+            <if test=" params.meishiVideo != '' and params.meishiVideo != null and params.meishiVideo != 'null' ">
+                and a.meishi_video like CONCAT('%',#{params.meishiVideo},'%')
+            </if>
+            <if test="params.zanNumberStart != null and params.zanNumberStart != ''">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null and params.zanNumberEnd != ''">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+             <if test="params.zanNumber != null and params.zanNumber != ''">
+                and a.zan_number = #{params.zanNumber}
+             </if>
+            <if test="params.caiNumberStart != null and params.caiNumberStart != ''">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null and params.caiNumberEnd != ''">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+             <if test="params.caiNumber != null and params.caiNumber != ''">
+                and a.cai_number = #{params.caiNumber}
+             </if>
+            <if test="params.meishiTypes != null and params.meishiTypes != ''">
+                and a.meishi_types = #{params.meishiTypes}
+            </if>
+            <if test="params.meishiClicknumStart != null and params.meishiClicknumStart != ''">
+                <![CDATA[  and a.meishi_clicknum >= #{params.meishiClicknumStart}   ]]>
+            </if>
+            <if test="params.meishiClicknumEnd != null and params.meishiClicknumEnd != ''">
+                <![CDATA[  and a.meishi_clicknum <= #{params.meishiClicknumEnd}   ]]>
+            </if>
+             <if test="params.meishiClicknum != null and params.meishiClicknum != ''">
+                and a.meishi_clicknum = #{params.meishiClicknum}
+             </if>
+            <if test=" params.meishiShicaiText != '' and params.meishiShicaiText != null and params.meishiShicaiText != 'null' ">
+                and a.meishi_shicai_text like CONCAT('%',#{params.meishiShicaiText},'%')
+            </if>
+            <if test=" params.meishiContent != '' and params.meishiContent != null and params.meishiContent != 'null' ">
+                and a.meishi_content like CONCAT('%',#{params.meishiContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.meishiDeleteStart != null and params.meishiDeleteStart != ''">
+                <![CDATA[  and a.meishi_delete >= #{params.meishiDeleteStart}   ]]>
+            </if>
+            <if test="params.meishiDeleteEnd != null and params.meishiDeleteEnd != ''">
+                <![CDATA[  and a.meishi_delete <= #{params.meishiDeleteEnd}   ]]>
+            </if>
+             <if test="params.meishiDelete != null and params.meishiDelete != ''">
+                and a.meishi_delete = #{params.meishiDelete}
+             </if>
+
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
